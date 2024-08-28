@@ -1,0 +1,13 @@
+{
+  "domain": "untracked_energy_tracker",
+  "name": "Untracked energy tracker",
+  "codeowners": ["@kamaradclimber"],
+  "config_flow": true,
+  "documentation": "https://github.com/kamaradclimber/home-assistant-untracked-energy-tracker",
+  "integration_type": "device",
+  "iot_class": "local",
+  "issue_tracker": "https://github.com/kamaradclimber/home-assistant-untracked-energy-tracker/issues",
+  "requirements": [
+  ],
+  "version": "0.1.0"
+}
