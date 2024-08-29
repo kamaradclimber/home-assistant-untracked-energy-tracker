@@ -93,6 +93,7 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
                 diff = self.delta_since_last_run(source["stat_energy_to"])
                 if diff is not None:
                     house_consumption -= diff
+        _LOGGER.debug(f"House consumed {house_consumption}kWh, while individually tracked devices consumed {sum_in_kWh}kWh")
         if house_consumption < sum_in_kWh:
             _LOGGER.warn(f"It seems house consumption was negative (even after removing energy sent back to the grid or to a battery). Skipping this iteration")
             return
@@ -102,26 +103,31 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
 
 
     def delta_since_last_run(self, entity_id: str) -> float | None:
-         state = self.hass.states.get(entity_id)
-         if state is None:
-             _LOGGER.warn(f"{entity_id} has no known state, this is really weird")
-             return
-         if state.state == "unknown":
-             # temporarily unavailable
-             return
-         value = float(state.state)
-         if state.attributes["unit_of_measurement"] == "Wh":
-             value = value / 1000
-         elif state.attributes["unit_of_measurement"] != "kWh":
-             _LOGGER.warn(f"Unable to deal with unit of measurement of {state}")
-         old_value = self._last_value.get(entity_id, None)
-         self._last_value[entity_id] = value
-         if old_value is not None:
-             if old_value <= value:
-                 return value - old_value
-             else:
-                 _LOGGER.warn(f"{entity_id} seems to have been reset since last read. Current value {value}, last known_value {old_value}")
-                 return value
+        """
+        Takes an entity_id of an entity exposing energy in Wh or kWh
+        Return the consumption/production in kWh since last measurement.
+        Return None if we don't have previous measurement or if current state is unknown
+        """
+        state = self.hass.states.get(entity_id)
+        if state is None:
+            _LOGGER.warn(f"{entity_id} has no known state, this is really weird")
+            return
+        if state.state == "unknown":
+            # temporarily unavailable
+            return
+        value = float(state.state)
+        if state.attributes["unit_of_measurement"] == "Wh":
+            value = value / 1000
+        elif state.attributes["unit_of_measurement"] != "kWh":
+            _LOGGER.warn(f"Unable to deal with unit of measurement of {state}")
+        old_value = self._last_value.get(entity_id, None)
+        self._last_value[entity_id] = value
+        if old_value is not None:
+            if old_value <= value:
+                return value - old_value
+            else:
+                _LOGGER.warn(f"{entity_id} seems to have been reset since last read. Current value {value}, last known_value {old_value}")
+                return value
 
 
 
