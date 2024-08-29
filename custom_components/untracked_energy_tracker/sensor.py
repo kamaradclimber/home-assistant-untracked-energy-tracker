@@ -112,7 +112,7 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
         if state is None:
             _LOGGER.warn(f"{entity_id} has no known state, this is really weird")
             return
-        if state.state == "unknown":
+        if state.state == "unknown" or state.state == "unavailable":
             # temporarily unavailable
             return
         value = float(state.state)
