@@ -99,6 +99,9 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
          if state is None:
              _LOGGER.warn(f"{entity_id} has no known state, this is really weird")
              return
+         if state.state == "unknown":
+             # temporarily unavailable
+             return
          value = float(state.state)
          if state.attributes["unit_of_measurement"] == "Wh":
              value = value / 1000
