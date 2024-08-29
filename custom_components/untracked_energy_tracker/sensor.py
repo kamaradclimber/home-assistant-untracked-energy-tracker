@@ -37,6 +37,8 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
         )
         self._attr_unique_id = f"{entry.entry_id}-untracked-energy-tracker-sensor"
         self._attr_state_attributes = {}
+        self._attr_state_attributes["iterations"] = 0
+        self._attr_state_attributes["successful_iterations"] = 0
 
     @property
     def native_value(self):
@@ -58,6 +60,7 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
         self._attr_state_attributes["individual_devices"] = self.individual_device_entities
 
     async def _update_value(self) -> None:
+        self._attr_state_attributes["iterations"] += 1
         sum_in_kWh = 0
         for entity_id in self.individual_device_entities:
             diff = self.delta_since_last_run(entity_id)
@@ -90,7 +93,11 @@ class UntrackedEnergyTrackerSensor(SensorEntity):
                 diff = self.delta_since_last_run(source["stat_energy_to"])
                 if diff is not None:
                     house_consumption -= diff
-        self._state = house_consumption - sum_in_kWh
+        if house_consumption < sum_in_kWh:
+            _LOGGER.warn(f"It seems house consumption was negative (even after removing energy sent back to the grid or to a battery). Skipping this iteration")
+            return
+        self._attr_state_attributes["successful_iterations"] += 1
+        self._state += house_consumption - sum_in_kWh
 
 
 
