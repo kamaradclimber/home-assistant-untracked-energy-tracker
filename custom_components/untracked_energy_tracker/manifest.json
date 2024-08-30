@@ -5,9 +5,12 @@
   "config_flow": true,
   "documentation": "https://github.com/kamaradclimber/home-assistant-untracked-energy-tracker",
   "integration_type": "device",
-  "iot_class": "local",
+  "iot_class": "calculated",
   "issue_tracker": "https://github.com/kamaradclimber/home-assistant-untracked-energy-tracker/issues",
   "requirements": [
+  ],
+  "dependencies": [
+    "energy"
   ],
   "version": "0.1.0"
 }
