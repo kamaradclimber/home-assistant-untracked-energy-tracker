@@ -3,14 +3,14 @@
   "name": "Untracked energy tracker",
   "codeowners": ["@kamaradclimber"],
   "config_flow": true,
+  "dependencies": [
+    "energy"
+  ],
   "documentation": "https://github.com/kamaradclimber/home-assistant-untracked-energy-tracker",
   "integration_type": "device",
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/kamaradclimber/home-assistant-untracked-energy-tracker/issues",
   "requirements": [
-  ],
-  "dependencies": [
-    "energy"
   ],
   "version": "0.1.0"
 }
